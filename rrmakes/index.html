@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Simples Configurável</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    padding: 20px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  #quiz-container {
+    max-width: 600px;
+    margin: auto;
+    background: palevioletred;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .question {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .options button {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    background: #eee;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #timer {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="quiz-container">
+
+  <div id="timer">
+    Tempo: <span id="time-left"></span>s
+  </div>
+
+  <div class="question" id="question-text"></div>
+
+  <div class="options" id="options"></div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+// ========================
+// CONFIGURAÇÕES DO QUIZ
+// ========================
+
+let tempoPorPergunta = 10;
+
+const quiz = [
+  {
+    pergunta: "Em que ano a empresa foi criada?",
+    alternativas: ["2019", "2021", "2022", "2024", "2025"],
+    correta: 0,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual o porte da empresa?",
+    alternativas: ["Microempreendedor Individual", "Microempresa", "Empresa de Pequeno Porte", "Médio Porte", "Grande Porte"],
+    correta: 1,
+    pontos: 10
+  },
+  {
+    pergunta: "Quem é a dona da rrmakes?",
+    alternativas: ["Bruna Tavares", "Mari Maria", "Rebeca Silva", "Franciny Ehlk", "Itamar Serpa Fernandes"],
+    correta: 2,
+    pontos: 10
+  },
+  {
+    pergunta: "Onde foi fundada a RRmakes?",
+    alternativas: ["Jaboatão dos Guararapes", "Olinda", "Pau Amarelo", "Recife", "Boa Viagem"],
+    correta: 0,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual o preço fixo posto nos produtos?",
+    alternativas: ["R$20,00", "R$15,99", "R$10,00", "R$31,99", "R$29,99"],
+    correta: 2,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual produto não é vendido na RRmakes?",
+    alternativas: ["Bonés", "Garrafas", "Base", "Papelaria", "Sapatos"],
+    correta: 4,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual o polo onde se é mais vendido produtos da RRmakes?",
+    alternativas: ["Caruaru", "Toritama", "Santa Cruz do Capibaribe", "Recife", "Boa vista"],
+    correta: 2,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual o tipo de comércio predominante na RRMakes?",
+    alternativas: ["Exportação", "Franquia", "Indústria", "Revenda", "Serviço"],
+    correta: 3,
+    pontos: 10
+  },
+  {
+    pergunta: "Qual a cor mais usada na identidade visual da marca RRMakes?",
+    alternativas: ["Azul Claro", "Verde Limão", "Amarelo Ouro", "Rosa Choque", "Cinza Escuro"],
+    correta: 3,
+    pontos: 10
+  },
+  {
+    pergunta: "Quantas lojas a rrmakes possui?",
+    alternativas: ["7", "6", "5", "4", "3"],
+    correta: 0,
+    pontos: 10
+  }
+];
+
+// ===============================
+// FUNDOS COM TAMANHO PERSONALIZADO
+// ===============================
+
+const fundos = [
+  { img: "url('./img/img0.jpg')", size: "1500px 1470px"},
+  { img: "url('./img/img1.jpg')", size: "1500px 1470px"},
+  { img: "url('./img/img2.avif')"}
+];
+
+// ========================
+// VARIÁVEIS DE CONTROLE
+// ========================
+
+let indice = 0;
+let pontuacao = 0;
+let tempo;
+let contador;
+
+// ========================
+// INICIA A PERGUNTA
+// ========================
+
+function iniciarPergunta() {
+
+  if (fundos[indice]) {
+    document.body.style.backgroundImage = fundos[indice].img;
+    document.body.style.backgroundSize = fundos[indice].size;
+    document.body.style.backgroundPosition = "center";
+  } else {
+    document.body.style.backgroundImage = "none";
+  }
+
+  if (indice >= quiz.length) {
+    mostrarResultado();
+    return;
+  }
+
+  const q = quiz[indice];
+  document.getElementById("question-text").textContent = `(${indice+1}) ${q.pergunta}`;
+
+  const opcoesDiv = document.getElementById("options");
+  opcoesDiv.innerHTML = "";
+
+  q.alternativas.forEach((alt, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = alt;
+    btn.onclick = () => responder(i);
+    opcoesDiv.appendChild(btn);
+  });
+
+  tempo = tempoPorPergunta;
+  document.getElementById("time-left").textContent = tempo;
+  iniciarTimer();
+}
+
+// ========================
+// TIMER
+// ========================
+
+function iniciarTimer() {
+  clearInterval(contador);
+
+  contador = setInterval(() => {
+    tempo--;
+    document.getElementById("time-left").textContent = tempo;
+
+    if (tempo <= 0) {
+      clearInterval(contador);
+      indice++;
+      iniciarPergunta();
+    }
+  }, 1000);
+}
+
+// ========================
+// RESPOSTA DO USUÁRIO
+// ========================
+
+function responder(i) {
+  clearInterval(contador);
+
+  const q = quiz[indice];
+
+  if (i === q.correta) {
+    pontuacao += q.pontos;
+  }
+
+  indice++;
+  iniciarPergunta();
+}
+
+// ========================
+// RESULTADO FINAL
+// ========================
+
+function mostrarResultado() {
+  document.getElementById("quiz-container").innerHTML = `
+    <h2>Resultado Final</h2>
+    <p>Pontuação total: <strong>${pontuacao}</strong></p>
+    <p>Você respondeu ${quiz.length} perguntas.</p>
+  `;
+}
+
+iniciarPergunta();
+</script>
+
+</body>
+</html>
