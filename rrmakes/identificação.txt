@@ -1,0 +1,7 @@
+Trabalho da 2° Avaliação Análise e Desenvolvimento de Sistemas 2MB
+Entrega: 15/12/2025
+
+Integrantes:
+Marina Souza Cavalcante de Carvalho – 01812767 – Estrutura HTML e Estilização CSS
+Matheus Spinola Monteiro - 01848562- Programação JavaScript
+Caio Andrade Amaral - 01854619 - Documentação
