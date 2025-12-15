@@ -1,286 +1,53 @@
-<!DOCTYPE html> 
-<!-- Define que o documento é HTML5 -->
-
+<!DOCTYPE html>
 <html lang="pt-BR">
-<!-- Define que o idioma principal da página é português do Brasil -->
-
 <head>
-<meta charset="UTF-8" />
-<!-- Define que a codificação dos caracteres é UTF-8 (suporta acentos) -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- Faz o layout se ajustar automaticamente para telas menores (responsivo) -->
- 
+  <title>Quiz Simples Configurável</title>
 
-<title>Quiz Simples Configurável</title>
-<!-- Título da aba do navegador -->
-
-<style>
-  body {
-    font-family: Arial, sans-serif; /* Define a fonte padrão */
-    background: #f2f2f2;            /* Cor de fundo da página */
-    padding: 20px;                 /* Espaçamento interno */
-  }
-
-  :root {
-    --CorRosa: #e0baff;
-    --CorRosaForte: #d147a3;
-  }
-
-  #quiz-container {
-    max-width: 600px;              /* Largura máxima */
-    margin: auto;                  /* Centraliza horizontalmente */
-    background: rgba(255, 255, 255, 0.6); /* leve transparência */
-    backdrop-filter: blur(3px); /* deixa bonito */
-    padding: 20px;                 /* Espaçamento interno */
-    border-radius: 10px;           /* Arredondamento das bordas */
-    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra suave ao redor */
-  }
-
-  .question {
-    font-size: 20px;               /* Tamanho da fonte da pergunta */
-    margin-bottom: 15px;           /* Espaçamento inferior */
-  }
-
-  .options button {
-    width: 100%;                   /* Botões ocupam 100% da largura */
-    text-align: left;              /* Texto alinhado à esquerda */
-    padding: 10px;                 /* Espaço interno */
-    margin: 5px 0;                 /* Espaçamento entre botões */
-    border: 1px solid #ccc;        /* Borda leve cinza */
-    background: rgb(224, 106, 146);              /* Cor do botão */
-    border-radius: 5px;            /* Bordas arredondadas */
-    cursor: pointer;               /* Mostra cursor de clique */
-  }
-  .options button:hover {
-    background: #e0e0e0;          /* Cor do botão ao passar o mouse */
-    box-shadow:
-        0 0 5px var(--CorRosa),
-        0 0 10px var(--CorRosaForte);
-  }
-
-  #timer {
-    font-weight: bold;             /* Texto em negrito */
-    margin-bottom: 10px;           /* Espaçamento inferior */
-  }
-</style>
+  <!-- Arquivo de estilos -->
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
-<!-- Conteúdo visível da página -->
 
-<div id="quiz-container">
-  <!-- Container principal do quiz -->
+  <div id="quiz-container">
+    <!-- Tela inicial do quiz -->
+    <div id="inicio">
+      <h2>Quiz – Conhecendo a RRMakes</h2>
 
-  <div id="timer">
-    Tempo: <span id="time-left"></span>s
-    <!-- Mostra o tempo restante da pergunta -->
+      <p>
+      Este quiz tem como objetivo testar seus conhecimentos sobre a empresa RRMakes.
+      Leia atentamente cada pergunta e escolha a alternativa correta antes que o tempo acabe.
+      </p>
+
+      <label for="tempoInput">
+        Tempo por pergunta (em segundos):
+      </label>
+      <input type="number" id ="tempoInput" min="5" max="60" value="10">
+
+      <br><br>
+
+      <button id="btnIniciar">Iniciar Quiz</button>
+    </div>
+
+
+    <div id="timer" style="display: none;">
+      Tempo: <span id="time-left"></span>
+    </div>
+
+    <div class="question" id="question-text"></div>
+
+    <div class="options" id="options"></div>
+
+    <div id="result"></div>
+
   </div>
 
-  <div class="question" id="question-text"></div>
-  <!-- Aqui aparece o texto da pergunta -->
-
-  <div class="options" id="options"></div>
-  <!-- Aqui aparecem os botões das alternativas -->
-
-  <div id="result"></div>
-  <!-- Aqui aparece o resultado final -->
-</div>
-
-<script>
-// ========================
-// CONFIGURAÇÕES DO QUIZ
-// ========================
-
-let tempoPorPergunta = 10; // Tempo em segundos para cada pergunta
-
-// Array contendo todas as perguntas
-const quiz = [
-  {
-    pergunta: "Em que ano a empresa foi criada?",
-    alternativas: ["2019", "2021", "2022", "2024", "2025"],
-    correta: 0,   // Índice da alternativa correta
-    pontos: 10    // Pontos por acerto
-  },
-  {
-    pergunta: "Qual o porte da empresa?",
-    alternativas: ["Microempreendedor Individual", "Microempresa", "Empresa de Pequeno Porte", "Médio Porte", "Grande Porte"],
-    correta: 1,
-    pontos: 10
-  },
-  {
-    pergunta: "Quem é a dona da rrmakes?",
-    alternativas: ["Bruna Tavares", "Mari Maria", "Rebeca Silva", "Franciny Ehlk", "Itamar Serpa Fernandes"],
-    correta: 2,
-    pontos: 10
-  },
-  {
-    pergunta: "Onde foi fundada a RRmakes?",
-    alternativas: ["Jaboatão dos Guararapes", "Olinda", "Pau Amarelo", "Recife", "Boa Viagem"],
-    correta: 0,
-    pontos: 10
-  },
-  {
-    pergunta: "Qual o preço fixo posto nos produtos? ",
-    alternativas: ["R$20,00", "R$15,99", "R$10,00", "R$31,99", "R$29,99"],
-    correta: 2,
-    pontos: 10
-  },
-  {
-    pergunta: "Qual produto não é vendido na RRmakes?",
-    alternativas: ["Bonés", "Garrafas", "Base", "Papelaria", "Sapatos"],
-    correta: 4, // "Sapatos"
-    pontos: 10
-  },
-  {
-    pergunta: "Qual o polo onde se é mais vendido produtos da RRmakes?",
-    alternativas: ["Caruaru", "Toritama", "Santa Cruz do Capibaribe", "Recife", "Boa vista"],
-    correta: 2,
-    pontos: 10
-  },
-  {
-    pergunta: "Qual o tipo de comércio predominante na RRMakes?",
-    alternativas: ["Exportação", "Franquia", "Indústria", "Revenda", "Serviço"],
-    correta: 3,
-    pontos: 10
-  },
-  {
-    pergunta: "Qual a cor mais usada na identidade visual da marca RRMakes?",
-    alternativas: ["Azul Claro", "Verde Limão", "Amarelo Ouro", "Rosa Choque", "Cinza Escuro"],
-    correta: 3,
-    pontos: 10
-  },
-  {
-    pergunta: "Quantas lojas a rrmakes possui?",
-    alternativas: ["7", "6", "5", "4", "3"],
-    correta: 0,
-    pontos: 10
-  }
-];
-
-// ===============================
-// IMAGENS DE FUNDO PARA CADA PERGUNTA
-// ===============================
-const fundos = [
-  "url('https://images.pexels.com/photos/3373739/pexels-photo-3373739.jpeg?auto=compress&cs=tinysrgb&w=1600')", 
-  "url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1920&q=80')",
-  "url('https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?auto=compress&cs=tinysrgb&w=1600')", 
-  "url('https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1920&q=80')",
-  "url('https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=1920&q=80')", 
-  "url('https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&w=1920&q=80')",
-  "url('https://images.pexels.com/photos/3373730/pexels-photo-3373730.jpeg?auto=compress&cs=tinysrgb&w=1600')",
-  "url('https://images.pexels.com/photos/212236/pexels-photo-212236.jpeg?auto=compress&cs=tinysrgb&w=1600')", 
-  "url('https://images.pexels.com/photos/7712474/pexels-photo-7712474.jpeg?auto=compress&cs=tinysrgb&w=1600')",
-  "url('https://images.pexels.com/photos/3373737/pexels-photo-3373737.jpeg?auto=compress&cs=tinysrgb&w=1600')", 
-
-];
-
-// Variáveis de controle
-let indice = 0;       // Índice da pergunta atual
-let pontuacao = 0;    // Pontuação acumulada
-let tempo;            // Tempo restante
-let contador;         // ID do intervalo (setInterval)
-
-// ========================
-// INICIA A PERGUNTA ATUAL
-// ========================
-function iniciarPergunta() {
-
-  document.body.style.backgroundImage = fundos[indice] || 'none';
-  // Define a imagem de fundo correspondente à pergunta
-
-  document.body.style.backgroundSize = 'cover';	
-  document.body.style.backgroundPosition = 'center';
-
-  if (indice >= quiz.length) {
-    // Quando acabar as perguntas, mostra o resultado
-    mostrarResultado();
-    return;
-  }
-
-  const q = quiz[indice];
-  // Pega a pergunta atual
-
-  document.getElementById("question-text").textContent = `(${indice+1}) ${q.pergunta}`;
-  // Exibe o número da questão e o texto
-
-  const opcoesDiv = document.getElementById("options");
-  opcoesDiv.innerHTML = "";
-  // Limpa as alternativas anteriores
-
-  q.alternativas.forEach((alt, i) => {
-    // Para cada alternativa, cria um botão
-    const btn = document.createElement("button");
-    btn.textContent = alt; // Texto do botão
-
-    btn.onclick = () => responder(i);
-    // Quando clicar, chama a função responder() passando o índice da alternativa
-
-    opcoesDiv.appendChild(btn);
-    // Adiciona o botão na tela
-  });
-
-  tempo = tempoPorPergunta;
-  // Reinicia o tempo da pergunta
-
-  document.getElementById("time-left").textContent = tempo;
-  // Mostra o tempo na tela
-
-  iniciarTimer();
-  // Começa a contagem regressiva
-}
-
-// ========================
-// CONTAGEM REGRESSIVA
-// ========================
-function iniciarTimer() {
-  clearInterval(contador);
-  // Se já existir um timer rodando, apaga
-
-  contador = setInterval(() => {
-    tempo--; // Diminui 1 segundo
-    document.getElementById("time-left").textContent = tempo;
-
-    if (tempo <= 0) {
-      // Se o tempo acabar, pula para a próxima pergunta
-      clearInterval(contador);
-      indice++;
-      iniciarPergunta();
-    }
-  }, 1000); // Roda a cada 1 segundo
-}
-
-// ========================
-// QUANDO O USUÁRIO RESPONDE
-// ========================
-function responder(i) {
-  clearInterval(contador);
-  // Para o timer ao responder
-
-  const q = quiz[indice];
-
-  if (i === q.correta) {
-    // Se acertou a alternativa
-    pontuacao += q.pontos;
-  }
-
-  indice++; // Vai para a próxima pergunta
-  iniciarPergunta();
-}
-
-// ========================
-// MOSTRA O RESULTADO FINAL
-// ========================
-function mostrarResultado() {
-  document.getElementById("quiz-container").innerHTML = `
-    <h2>Resultado Final</h2>
-    <p>Pontuação total: <strong>${pontuacao}</strong></p>
-    <p>Você respondeu ${quiz.length} perguntas.</p>
-  `;
-}
-
-// Inicia o quiz ao carregar
-iniciarPergunta();
-
-</script>
+  <!-- Arquivo JavaScript -->
+  <script src="js/quiz.js"></script>
 </body>
+</html>
+
+
