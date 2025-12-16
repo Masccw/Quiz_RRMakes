@@ -60,7 +60,7 @@ Testar os conhecimentos do usuário sobre a empresa RRMakes por meio de um quiz 
 
 ---
 
- ▶️ Instruções de Execução
+ Instruções de Execução
 
 1. Baixe e extraia o arquivo .zip do projeto.
 2. Abra a pasta raiz do projeto.
