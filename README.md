@@ -82,4 +82,4 @@ Testar os conhecimentos do usuário sobre a empresa RRMakes por meio de um quiz 
  O temporizador pode ser configurado pelo usuário antes de iniciar o quiz.
 
 
-**Trabalho da 2ª Avaliação – ADS - 2MB**
+
